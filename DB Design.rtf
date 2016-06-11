@@ -1,0 +1,92 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1348\cocoasubrtf170
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww11100\viewh8700\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 User DB\
+Username	VARCHAR(128)	NOT NULL, Primary\
+Password	VARCHAR(128)	NOT NULL,\
+Email		VARCHAR(128)	NOT NULL,\
+Type		BIT(1)			NOT NULL,		# 1 cooker, 0 buyer\
+Firstname	VARCHAR(128),\
+Lastname	VARCHAR(128),\
+Phone		VARCHAR(16),\
+Address	VARCHAR(256),\
+City		VARCHAR(32),\
+State		VARCHAR(16),\
+Zip		MEDIUMINT,\
+Description	VARCHAR(2000),\
+Photo		MEDIUMBLOB,\
+Tag		VARCHAR(1024),\
+MonStart	VARCHAR(8),\
+Moaned	VARCHAR(8),\
+TueStart	VARCHAR(8),\
+TueEnd	VARCHAR(8),\
+WedStart	VARCHAR(8),\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qr
+\cf0 WedEnd	VARCHAR(8),\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 ThuStart	VARCHAR(8),\
+ThuEnd	VARCHAR(8),\
+FriStart	VARCHAR(8),\
+FriEnd		VARCHAR(8),\
+SatStart	VARCHAR(8),\
+SatEnd	VARCHAR(8),\
+SunStart	VARCHAR(8),\
+SunEnd	VARCHAR(8),\
+Rating		FLOAT(2,1),	#e.g 4.1\
+\
+Menu Table:\
+Username:	VARCHAR(128)	Primary\
+Category:	VARCHAR(128)	Primary\
+\
+Dish Table:\
+Username:	VARCHAR(128)	\
+DishId		INT AUTO_INCREMENT		Primary\
+Category:	VARCHAR(128)\
+DishName:	VARCHAR(128)\
+Price:		FLOAT(4,2)\
+Description:	VARCHAR(2000)\
+Status:	BIT(1)		# 1 available, 0 not available\
+Mon:		BIT(1)		# 1 available, 0 not available\
+Tue:		BIT(1)\
+Wed:		BIT(1)\
+Thu:		BIT(1)\
+Fri:		BIT(1)\
+Sat:		BIT(1)\
+Sun:		BIT(1)\
+Photo:		MEDIUMBLOB\
+\
+Orders Table:\
+OrderId	INT			Primary\
+Username:	VARCHAR(128)	\
+BuyerSeller:	VARCHAR(128)	\
+DishName:	VARCHAR(128)\
+Quantity	TINYINT\
+Status		BIT(1)		# 1 confirmed, 0 not confirmed\
+\
+Notification Table\
+Username:	VARCHAR(128)	\
+Id:		INT AUTO_INCREMENT		Primary\
+Content:	VARCHAR(2000)\
+Status:	BIT(1)		# 1 Viewed, 0 unread\
+Time:		TIMESTAMP\
+\
+Review Table:\
+ReviewId:	INT		Primary\
+Author:	VARCHAR(128)\
+Rating		Float(2,1)\
+Title:		VARCHAR(256)\
+Content:	VARCHAR(4096)\
+Time:		TIMESTAMP\
+TargetUser:	VARCHAR(128)\
+\
+Favorite Table:\
+Username:	VARCHAR(128)		Primary\
+CookerName:	VARCHAR(128) 	Secondary\
+\
+\
+\
+\
+	}

@@ -1,0 +1,35 @@
+# This script is used to prepare fake data into DB for testing purpose
+
+delete from User;
+
+insert into User (Username,Password,Email,Type,Firstname,Lastname,Phone,Address,City,State,Zip,Description,Tag,Rating)
+values ('TestUser1','Test','Test1@gmail.com',1,'James','LeBron','888-888-8888','170 Tasman Drive','San Jose','California',95134,'BlaBlaBla','Chinese',4.0);
+
+insert into User (Username,Password,Email,Type,Firstname,Lastname,Phone,Address,City,State,Zip,Description,Tag,Rating)
+values ('TestUser2','Test','Test2@gmail.com',0,'Kobe','Bryant','888-888-8888','172 Tasman Drive','San Jose','California',95134,'BlaBlaBla','Chinese',4.2);
+
+delete from Menu;
+
+insert into Menu (Username,Category)
+values ('TestUser1','Combo A'),
+('TestUser1','Combo B'),
+('TestUser1','Combo C');
+
+delete from Dish;
+
+insert into Dish (Username,Category,DishName,Price,Description,Status,Mon,Tue,Wed,Thu,Fri,Sat,Sun)
+values ('TestUser1','Combo A','Dish1',8.99,'This is dish 1.',1,1,0,0,0,1,0,1),
+('TestUser1','Combo A','Dish2',9.99,'This is dish 2.',1,1,1,0,1,0,0,1),
+('TestUser1','Combo A','Dish3',7.99,'This is dish 3.',1,0,1,0,1,0,1,0),
+('TestUser1','Combo B','Dish4',9.99,'This is dish 4.',1,1,0,1,1,0,0,1),
+('TestUser1','Combo B','Dish2',6.99,'This is dish 2.',1,1,1,1,1,0,0,1);
+
+delete from Orders;
+
+insert into Orders (OrderId, Username, BuyerSeller, DishName, Quantity, Status) values
+(1, 'TestUser1', 'TestUser2', 'Dish1', 2, 1),
+(2, 'TestUser1', 'TestUser2', 'Dish2', 2, 0),
+(3, 'TestUser1', 'TestUser2', 'Dish3', 2, 1);
+
+
+
