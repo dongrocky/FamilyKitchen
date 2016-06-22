@@ -3,9 +3,11 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.springframework</groupId>
+    <groupId>forester</groupId>
     <artifactId>FamilyKitchen</artifactId>
     <version>0.1.0</version>
+    <name>FamilyKitchen</name>
+    <description>Web application for booking meals from family kitchen</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -28,6 +30,14 @@
             <artifactId>json-path</artifactId>
             <scope>test</scope>
         </dependency>
+	<dependency>
+	  <groupId>org.springframework.boot</groupId>
+	  <artifactId>spring-boot-starter-data-jpa</artifactId>
+	</dependency>
+	<dependency>
+	    <groupId>mysql</groupId>
+	    <artifactId>mysql-connector-java</artifactId>
+	</dependency>
     </dependencies>
 
     <properties>
@@ -44,16 +54,4 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>spring-releases</id>
-            <url>https://repo.spring.io/libs-release</url>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>spring-releases</id>
-            <url>https://repo.spring.io/libs-release</url>
-        </pluginRepository>
-    </pluginRepositories>
 </project>
