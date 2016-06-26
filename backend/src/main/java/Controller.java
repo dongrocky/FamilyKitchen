@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // /user/{username}?type=1
 // /menu?catogory=xxx&data=Mon
@@ -12,8 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 @RequestMapping("/user")
 class Controller {
 
-    private static final String template = "Hello, %s!";
     private final AtomicLong counter = new AtomicLong();
+    private static final Logger logger = 
+        LoggerFactory.getLogger(Controller.class);
 
     @Autowired
     private UserDao userDao;
@@ -23,13 +26,13 @@ class Controller {
         User user = null;
 
         if(name == null || name.length() == 0) {
-            System.out.println("User name is empty.");
+            logger.error("User name is empty.");
         }
 
         try {
 	        user = userDao.findByUserName(name);
         } catch (IllegalArgumentException e) {
-            System.out.println("Failed to get user " + name);
+            logger.error("Failed to get user " + name);
             return null;
         }
 
@@ -40,7 +43,7 @@ class Controller {
     public boolean createUser(@PathVariable("username") String name) {
 
         if(name == null || name.length() == 0) {
-            System.out.println("User name is empty.");
+            logger.error("User name is empty.");
         }
 
         User user = new User(name);
@@ -48,9 +51,11 @@ class Controller {
         try {
 	        user = userDao.save(user);
         } catch (IllegalArgumentException e) {
-            System.out.println("Failed to create user " + name);
+            logger.error("Failed to create user " + name);
             return false;
         }
+
+        logger.info("Created user: " + name);
 
         return true;
     }
@@ -59,7 +64,7 @@ class Controller {
     public boolean deleteUser(@PathVariable("username") String name) {
 
         if(name == null || name.length() == 0) {
-            System.out.println("User name is empty.");
+            logger.error("User name is empty.");
         }
 
         User user = new User(name);
@@ -67,9 +72,11 @@ class Controller {
         try {
 	        userDao.delete(user);
         } catch (IllegalArgumentException e) {
-            System.out.println("Failed to delete user " + name);
+            logger.error("Failed to delete user " + name);
             return false;
         }
+
+        logger.info("Deleted user: " + name);
 
         return true;
     }
