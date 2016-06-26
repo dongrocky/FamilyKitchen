@@ -1,15 +1,25 @@
-package familykitchen;
+package forester.familykitchen;
 
 import java.util.BitSet;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
+
+@Entity
+@Table(name="users")
 class User {
 
-    private final String userName;
+    @Id
+    private String userName;
     // private final String password;
-    private final String email;
+
+    private String email;
     // private final BitSet type;
-    private final String firstName;
-    private final String lastName;
+
+    private String firstName;
+    private String lastName;
 /*
     private final String phone;
     private final String address;
@@ -35,18 +45,37 @@ class User {
     private final float  rating;
 */
 
+    public User() {}
+
     public User(String name) {
-	userName = name;
-	email = "dummy@gmail.com";
-	firstName = "David";
-	lastName = "Jobs";
+	    userName = name;
     }
 
-    public String getUsername() {
+    public String getUserName() {
         return userName;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getEmail() {
         return email;
+    }
+
+    public void setFirstName(String first) {
+        this.firstName = first;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setLastName(String last) {
+        lastName = last;
+    }
+
+    public String getLastName() {
+        return lastName;
     }
 }

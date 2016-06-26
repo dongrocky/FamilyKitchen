@@ -1,4 +1,4 @@
-package familykitchen;
+package forester;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
