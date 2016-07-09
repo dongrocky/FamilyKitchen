@@ -8,6 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 // /user/{username}?type=1
 // /menu?catogory=xxx&data=Mon
 @RestController
@@ -40,24 +46,27 @@ class Controller {
     }
 
     @RequestMapping("/create/{username}")
-    public boolean createUser(@PathVariable("username") String name) {
+    public ResponseEntity<?> createUser(@PathVariable("username") String name) {
 
         if(name == null || name.length() == 0) {
             logger.error("User name is empty.");
         }
 
+        HttpHeaders header = new HttpHeaders();
         User user = new User(name);
 
         try {
 	        user = userDao.save(user);
         } catch (IllegalArgumentException e) {
             logger.error("Failed to create user " + name);
-            return false;
+            return new ResponseEntity<>("Failed", header, HttpStatus.INTERNAL_SERVER_ERROR); 
         }
+
+        /* Build response */
 
         logger.info("Created user: " + name);
 
-        return true;
+        return new ResponseEntity<>("Success", new HttpHeaders(), HttpStatus.CREATED); 
     }
 
     @RequestMapping("/delete/{username}")
