@@ -20,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import org.springframework.http.MediaType;
 import java.nio.charset.Charset;
+import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = forester.familykitchen.Application.class)
@@ -40,8 +41,49 @@ public class UserControllerTest {
 
     @Test
     public void createUserTest() throws Exception {
+        /* clean up */
+        mockMvc.perform(post("/user/delete/David")
+                .contentType(contentType));
+        mockMvc.perform(post("/user/delete/~David")
+                .contentType(contentType));
+        mockMvc.perform(post("/user/delete/!David")
+                .contentType(contentType));
+        mockMvc.perform(post("/user/delete/6")
+                .contentType(contentType));
+
+        /* test with normal name */
         mockMvc.perform(post("/user/create/David")
                 .contentType(contentType))
                 .andExpect(status().isCreated());
+        
+        /* testing with unusual user name. */
+        mockMvc.perform(post("/user/create/!David")
+                .contentType(contentType))
+                .andExpect(status().isCreated());
+        mockMvc.perform(post("/user/create/~David")
+                .contentType(contentType))
+                .andExpect(status().isCreated());
+        mockMvc.perform(post("/user/create/.")
+                .contentType(contentType))
+                .andExpect(status().isUnprocessableEntity());
+        mockMvc.perform(post("/user/create/")
+                .contentType(contentType))
+                .andExpect(status().isMethodNotAllowed());
+        mockMvc.perform(post("/user/create/6")
+                .contentType(contentType))
+                .andExpect(status().isCreated());
+
+        /* testing with duplicate */
+        mockMvc.perform(post("/user/create/David")
+                .contentType(contentType))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    public void getUserTest() throws Exception {
+        mockMvc.perform(get("/user/get/David")
+                .contentType(contentType))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userName",is("David")));
     }
 }

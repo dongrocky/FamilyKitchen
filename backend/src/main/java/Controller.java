@@ -50,23 +50,37 @@ class Controller {
 
         if(name == null || name.length() == 0) {
             logger.error("User name is empty.");
+            return new ResponseEntity<>("Failed",
+                                        new HttpHeaders(),
+                                        HttpStatus.UNPROCESSABLE_ENTITY); 
         }
 
-        HttpHeaders header = new HttpHeaders();
+        /* check if the user name exists */
+        if (userDao.findByUserName(name) != null) {
+            logger.info("User name " + name + " already existed.");
+            return new ResponseEntity<>("Failed",
+                                        new HttpHeaders(),
+                                        HttpStatus.UNPROCESSABLE_ENTITY); 
+        }
+
         User user = new User(name);
 
         try {
 	        user = userDao.save(user);
         } catch (IllegalArgumentException e) {
             logger.error("Failed to create user " + name);
-            return new ResponseEntity<>("Failed", header, HttpStatus.INTERNAL_SERVER_ERROR); 
+            return new ResponseEntity<>("Failed",
+                                        new HttpHeaders(), 
+                                        HttpStatus.INTERNAL_SERVER_ERROR); 
         }
 
         /* Build response */
 
         logger.info("Created user: " + name);
 
-        return new ResponseEntity<>("Success", new HttpHeaders(), HttpStatus.CREATED); 
+        return new ResponseEntity<>("Success",
+                                    new HttpHeaders(),
+                                    HttpStatus.CREATED); 
     }
 
     @RequestMapping("/delete/{username}")
