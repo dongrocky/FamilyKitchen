@@ -28,21 +28,24 @@ class Controller {
     private UserDao userDao;
 
     @RequestMapping("/get/{username}")
-    public User getUser(@PathVariable("username") String name) {
+    public ResponseEntity<User> getUser(@PathVariable("username") String name) {
         User user = null;
 
-        if(name == null || name.length() == 0) {
-            logger.error("User name is empty.");
-        }
+        /* This is throw exception if the user does not exist. */
+        // validateUser(name);
 
         try {
 	        user = userDao.findByUserName(name);
         } catch (IllegalArgumentException e) {
             logger.error("Failed to get user " + name);
-            return null;
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return user;
+        if(user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @RequestMapping("/create/{username}")
@@ -102,5 +105,23 @@ class Controller {
         logger.info("Deleted user: " + name);
 
         return true;
+    }
+
+    private void validateUser(String userName) {
+        if(userName == null || userName.length() == 0) {
+            throw new UserNotFoundException(userName);
+        }
+
+        if(userDao.findByUserName(userName) == null) {
+            throw new UserNotFoundException(userName);
+        }
+    }
+}
+
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
+class UserNotFoundException extends RuntimeException {
+
+    public UserNotFoundException(String userName) {
+        super("could not find user '" + userName + "'.");
     }
 }

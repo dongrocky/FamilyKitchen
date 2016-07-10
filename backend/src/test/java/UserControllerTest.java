@@ -85,5 +85,8 @@ public class UserControllerTest {
                 .contentType(contentType))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userName",is("David")));
+        mockMvc.perform(get("/user/get/John")
+                .contentType(contentType))
+                .andExpect(status().isNotFound());
     }
 }
