@@ -43,67 +43,67 @@ public class UserControllerTest {
     @Test
     public void createUserTest() throws Exception {
         /* clean up */
-        mockMvc.perform(post("/user/delete/David")
+        mockMvc.perform(delete("/user/David")
                 .contentType(contentType));
-        mockMvc.perform(post("/user/delete/~David")
+        mockMvc.perform(delete("/user/~David")
                 .contentType(contentType));
-        mockMvc.perform(post("/user/delete/!David")
+        mockMvc.perform(delete("/user/!David")
                 .contentType(contentType));
-        mockMvc.perform(post("/user/delete/6")
+        mockMvc.perform(delete("/user/6")
                 .contentType(contentType));
 
         /* test with normal name */
-        mockMvc.perform(post("/user/create/David")
+        mockMvc.perform(post("/user/David")
                 .contentType(contentType))
                 .andExpect(status().isCreated());
         
         /* testing with unusual user name. */
-        mockMvc.perform(post("/user/create/!David")
+        mockMvc.perform(post("/user/!David")
                 .contentType(contentType))
                 .andExpect(status().isCreated());
-        mockMvc.perform(post("/user/create/~David")
+        mockMvc.perform(post("/user/~David")
                 .contentType(contentType))
                 .andExpect(status().isCreated());
-        mockMvc.perform(post("/user/create/.")
+        mockMvc.perform(post("/user/.")
                 .contentType(contentType))
                 .andExpect(status().isUnprocessableEntity());
-        mockMvc.perform(post("/user/create/")
+        mockMvc.perform(post("/user/")
                 .contentType(contentType))
                 .andExpect(status().isMethodNotAllowed());
-        mockMvc.perform(post("/user/create/6")
+        mockMvc.perform(post("/user/6")
                 .contentType(contentType))
                 .andExpect(status().isCreated());
 
         /* testing with duplicate */
-        mockMvc.perform(post("/user/create/David")
+        mockMvc.perform(post("/user/David")
                 .contentType(contentType))
                 .andExpect(status().isUnprocessableEntity());
     }
 
     @Test
     public void getUserTest() throws Exception {
-        mockMvc.perform(get("/user/get/David")
+        mockMvc.perform(get("/user/David")
                 .contentType(contentType))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userName",is("David")));
-        mockMvc.perform(get("/user/get/John")
+        mockMvc.perform(get("/user/John")
                 .contentType(contentType))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     public void deleteUserTest() throws Exception {
-        mockMvc.perform(delete("/user/delete/David")
+        mockMvc.perform(delete("/user/David")
                 .contentType(contentType))
                 .andExpect(status().isNoContent());
 
         /* duplicate delete */
-        mockMvc.perform(delete("/user/delete/David")
+        mockMvc.perform(delete("/user/David")
                 .contentType(contentType))
                 .andExpect(status().isNotFound());
 
         /* delete non-existent */
-        mockMvc.perform(delete("/user/delete/John")
+        mockMvc.perform(delete("/user/John")
                 .contentType(contentType))
                 .andExpect(status().isNotFound());
     }

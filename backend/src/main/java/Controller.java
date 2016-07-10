@@ -27,7 +27,7 @@ class Controller {
     @Autowired
     private UserDao userDao;
 
-    @RequestMapping("/get/{username}")
+    @RequestMapping(value="/{username}", method = RequestMethod.GET)
     public ResponseEntity<User> getUser(@PathVariable("username") String name) {
         User user = null;
 
@@ -48,7 +48,7 @@ class Controller {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @RequestMapping("/create/{username}")
+    @RequestMapping(value="/{username}", method = RequestMethod.POST)
     public ResponseEntity<?> createUser(@PathVariable("username") String name) {
 
         if(name == null || name.length() == 0) {
@@ -86,7 +86,7 @@ class Controller {
                                     HttpStatus.CREATED); 
     }
 
-    @RequestMapping("/delete/{username}")
+    @RequestMapping(value = "/{username}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteUser(@PathVariable("username") String name) {
 
         if(!validateUser(name)) {
