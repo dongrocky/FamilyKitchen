@@ -87,10 +87,12 @@ class Controller {
     }
 
     @RequestMapping("/delete/{username}")
-    public boolean deleteUser(@PathVariable("username") String name) {
+    public ResponseEntity<?> deleteUser(@PathVariable("username") String name) {
 
-        if(name == null || name.length() == 0) {
-            logger.error("User name is empty.");
+        if(!validateUser(name)) {
+            logger.error("User name " + name + " is not valid " + 
+                         "to delete the user.");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         User user = new User(name);
@@ -99,22 +101,28 @@ class Controller {
 	        userDao.delete(user);
         } catch (IllegalArgumentException e) {
             logger.error("Failed to delete user " + name);
-            return false;
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         logger.info("Deleted user: " + name);
 
-        return true;
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    private void validateUser(String userName) {
-        if(userName == null || userName.length() == 0) {
-            throw new UserNotFoundException(userName);
+    private boolean validateUser(String name) {
+        if(name == null || name.length() == 0) {
+            logger.error("User name is empty.");
+            return false;
         }
 
-        if(userDao.findByUserName(userName) == null) {
-            throw new UserNotFoundException(userName);
+        User user = userDao.findByUserName(name);
+
+        if (user == null) {
+            return false;
         }
+
+        return true;
+
     }
 }
 
