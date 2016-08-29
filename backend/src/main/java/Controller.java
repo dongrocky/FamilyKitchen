@@ -3,6 +3,7 @@ package forester.familykitchen;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.slf4j.Logger;
@@ -13,16 +14,18 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.util.UriComponentsBuilder;
+
 
 // /user/{username}?type=1
 // /menu?catogory=xxx&data=Mon
 @RestController
 @RequestMapping("/user")
-class Controller {
+class UserController {
 
     private final AtomicLong counter = new AtomicLong();
     private static final Logger logger = 
-        LoggerFactory.getLogger(Controller.class);
+        LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserDao userDao;
@@ -48,14 +51,25 @@ class Controller {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @RequestMapping(value="/{username}", method = RequestMethod.POST)
-    public ResponseEntity<?> createUser(@PathVariable("username") String name) {
+    @RequestMapping(value="/add", method=RequestMethod.GET)
+    public ResponseEntity<?> getCreateUserForm() {
+        //FIXME: return the form
+        return new ResponseEntity<>("Success",
+                                    new HttpHeaders(),
+                                    HttpStatus.CREATED); 
+    }
 
-        if(name == null || name.length() == 0) {
-            logger.error("User name is empty.");
+    @RequestMapping(value="/add", method = RequestMethod.POST)
+    public ResponseEntity<?> createUser(@RequestBody User user, 
+                                        UriComponentsBuilder ucBuilder) {
+
+        String name = user.getUserName();
+
+        if(name.isEmpty()) {
+            logger.error("Empty name is not allowed.");
             return new ResponseEntity<>("Failed",
                                         new HttpHeaders(),
-                                        HttpStatus.UNPROCESSABLE_ENTITY); 
+                                        HttpStatus.BAD_REQUEST); 
         }
 
         /* check if the user name exists */
@@ -63,10 +77,8 @@ class Controller {
             logger.info("User name " + name + " already existed.");
             return new ResponseEntity<>("Failed",
                                         new HttpHeaders(),
-                                        HttpStatus.UNPROCESSABLE_ENTITY); 
+                                        HttpStatus.CONFLICT); 
         }
-
-        User user = new User(name);
 
         try {
 	        user = userDao.save(user);
@@ -81,8 +93,11 @@ class Controller {
 
         logger.info("Created user: " + name);
 
+        HttpHeaders header = new HttpHeaders();
+        header.setLocation(ucBuilder.path("/user/{id}")
+                                .buildAndExpand(name).toUri());
         return new ResponseEntity<>("Success",
-                                    new HttpHeaders(),
+                                    header,
                                     HttpStatus.CREATED); 
     }
 

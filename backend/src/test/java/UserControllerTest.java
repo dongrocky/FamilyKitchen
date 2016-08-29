@@ -51,33 +51,67 @@ public class UserControllerTest {
                 .contentType(contentType));
         mockMvc.perform(delete("/user/6")
                 .contentType(contentType));
+        mockMvc.perform(delete("/user/")
+                .contentType(contentType));
 
         /* test with normal name */
-        mockMvc.perform(post("/user/David")
-                .contentType(contentType))
+        String json = "{" + 
+                       "\"userName\"  : \"David\"," +
+                       "\"email\"     : \"David@example.com\"," +
+                       "\"password\"  : \"David123@\"" +   
+                       "}";
+        mockMvc.perform(post("/user/add")
+                .contentType(contentType)
+                .content(json))
                 .andExpect(status().isCreated());
         
         /* testing with unusual user name. */
-        mockMvc.perform(post("/user/!David")
-                .contentType(contentType))
+        String json1 = "{" + 
+                       "\"userName\"  : \"!David\"," +
+                       "\"email\"     : \"David@example.com\"," +
+                       "\"password\"  : \"David123@\"" +   
+                       "}";
+        mockMvc.perform(post("/user/add")
+                .contentType(contentType)
+                .content(json1))
                 .andExpect(status().isCreated());
-        mockMvc.perform(post("/user/~David")
-                .contentType(contentType))
+        String json2 = "{" + 
+                       "\"userName\"  : \"~David\"," +
+                       "\"email\"     : \"David@example.com\"," +
+                       "\"password\"  : \"David123@\"" +   
+                       "}";
+        mockMvc.perform(post("/user/add")
+                .contentType(contentType)
+                .content(json2))
                 .andExpect(status().isCreated());
-        mockMvc.perform(post("/user/.")
-                .contentType(contentType))
-                .andExpect(status().isUnprocessableEntity());
-        mockMvc.perform(post("/user/")
-                .contentType(contentType))
-                .andExpect(status().isMethodNotAllowed());
-        mockMvc.perform(post("/user/6")
-                .contentType(contentType))
+        /*
+         * This test is commented because "" exists in DB 
+         * and can not be deleted
+         */
+        String json3 = "{" + 
+                       "\"userName\"  : \"\"," +
+                       "\"email\"     : \"David@example.com\"," +
+                       "\"password\"  : \"David123@\"" +   
+                       "}";
+        mockMvc.perform(post("/user/add")
+                .contentType(contentType)
+                .content(json3))
+                .andExpect(status().isBadRequest());
+        String json4 = "{" + 
+                       "\"userName\"  : \"6\"," +
+                       "\"email\"     : \"David@example.com\"," +
+                       "\"password\"  : \"David123@\"" +   
+                       "}";
+        mockMvc.perform(post("/user/add")
+                .contentType(contentType)
+                .content(json4))
                 .andExpect(status().isCreated());
 
         /* testing with duplicate */
-        mockMvc.perform(post("/user/David")
-                .contentType(contentType))
-                .andExpect(status().isUnprocessableEntity());
+        mockMvc.perform(post("/user/add")
+                .contentType(contentType)
+                .content(json))
+                .andExpect(status().isConflict());
     }
 
     @Test
