@@ -13,7 +13,7 @@ class User {
 
     @Id
     private String userName;
-    // private final String password;
+    private String password;
 
     private String email;
     // private final BitSet type;
@@ -77,5 +77,13 @@ class User {
 
     public String getLastName() {
         return lastName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String pw) {
+        password = pw;
     }
 }

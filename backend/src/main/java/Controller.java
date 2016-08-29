@@ -59,7 +59,7 @@ class UserController {
                                     HttpStatus.CREATED); 
     }
 
-    @RequestMapping(value="/add", method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<?> createUser(@RequestBody User user, 
                                         UriComponentsBuilder ucBuilder) {
 
@@ -91,7 +91,7 @@ class UserController {
 
         /* Build response */
 
-        logger.info("Created user: " + name);
+        logger.debug("Created user: " + name);
 
         HttpHeaders header = new HttpHeaders();
         header.setLocation(ucBuilder.path("/user/{id}")
@@ -99,6 +99,31 @@ class UserController {
         return new ResponseEntity<>("Success",
                                     header,
                                     HttpStatus.CREATED); 
+    }
+
+    @RequestMapping(method = RequestMethod.PUT)
+    public ResponseEntity<?> updateUser(@RequestBody User user) {
+        String name = user.getUserName();
+
+        if(!validateUser(name)) {
+            logger.error("User name " + name + " is not valid.");
+            return new ResponseEntity<>("Failure",
+                                        new HttpHeaders(),
+                                        HttpStatus.BAD_REQUEST); 
+        }
+
+        try {
+            user = userDao.save(user);
+        } catch(IllegalArgumentException e) {
+            logger.error("Failed to update user " + name + " Error: " + e.toString());
+            return new ResponseEntity<>("Failure",
+                                        new HttpHeaders(),
+                                        HttpStatus.INTERNAL_SERVER_ERROR); 
+        }
+
+        return new ResponseEntity<>("Success",
+                                    new HttpHeaders(),
+                                    HttpStatus.OK); 
     }
 
     @RequestMapping(value = "/{username}", method = RequestMethod.DELETE)
@@ -119,7 +144,7 @@ class UserController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        logger.info("Deleted user: " + name);
+        logger.debug("Deleted user: " + name);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

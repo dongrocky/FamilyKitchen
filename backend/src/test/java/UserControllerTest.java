@@ -15,6 +15,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -60,7 +61,7 @@ public class UserControllerTest {
                        "\"email\"     : \"David@example.com\"," +
                        "\"password\"  : \"David123@\"" +   
                        "}";
-        mockMvc.perform(post("/user/add")
+        mockMvc.perform(post("/user/")
                 .contentType(contentType)
                 .content(json))
                 .andExpect(status().isCreated());
@@ -71,7 +72,7 @@ public class UserControllerTest {
                        "\"email\"     : \"David@example.com\"," +
                        "\"password\"  : \"David123@\"" +   
                        "}";
-        mockMvc.perform(post("/user/add")
+        mockMvc.perform(post("/user/")
                 .contentType(contentType)
                 .content(json1))
                 .andExpect(status().isCreated());
@@ -80,7 +81,7 @@ public class UserControllerTest {
                        "\"email\"     : \"David@example.com\"," +
                        "\"password\"  : \"David123@\"" +   
                        "}";
-        mockMvc.perform(post("/user/add")
+        mockMvc.perform(post("/user/")
                 .contentType(contentType)
                 .content(json2))
                 .andExpect(status().isCreated());
@@ -93,7 +94,7 @@ public class UserControllerTest {
                        "\"email\"     : \"David@example.com\"," +
                        "\"password\"  : \"David123@\"" +   
                        "}";
-        mockMvc.perform(post("/user/add")
+        mockMvc.perform(post("/user/")
                 .contentType(contentType)
                 .content(json3))
                 .andExpect(status().isBadRequest());
@@ -102,13 +103,13 @@ public class UserControllerTest {
                        "\"email\"     : \"David@example.com\"," +
                        "\"password\"  : \"David123@\"" +   
                        "}";
-        mockMvc.perform(post("/user/add")
+        mockMvc.perform(post("/user/")
                 .contentType(contentType)
                 .content(json4))
                 .andExpect(status().isCreated());
 
         /* testing with duplicate */
-        mockMvc.perform(post("/user/add")
+        mockMvc.perform(post("/user/")
                 .contentType(contentType)
                 .content(json))
                 .andExpect(status().isConflict());
@@ -123,6 +124,50 @@ public class UserControllerTest {
         mockMvc.perform(get("/user/John")
                 .contentType(contentType))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void updateUserTest() throws Exception {
+        String json = "{" + 
+                       "\"userName\"  : \"David_update\"," +
+                       "\"email\"     : \"David@example.com\"," +
+                       "\"password\"  : \"David123@\"" +   
+                       "}";
+        /* delete the user in case it exists */
+        mockMvc.perform(delete("/user/David_update")
+                .contentType(contentType));
+
+        /* create the user first */
+        mockMvc.perform(post("/user/")
+                        .contentType(contentType)
+                        .content(json))
+                        .andExpect(status().isCreated());
+
+        /* update the user info */
+        json = "{" + 
+               "\"userName\"  : \"David_update\"," +
+               "\"email\"     : \"David_updated@example.com\"," +
+               "\"password\"  : \"David321@\"," +   
+               "\"firstName\"  : \"David_first\"," +   
+               "\"lastName\"  : \"David_last\"" + 
+               "}";
+        mockMvc.perform(put("/user/")
+                        .contentType(contentType)
+                        .content(json))
+                        .andExpect(status().isOk());
+
+        /* verify the content */
+        mockMvc.perform(get("/user/David_update")
+                        .contentType(contentType))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.userName",is("David_update")))
+               .andExpect(jsonPath("$.email",is("David_updated@example.com")))
+               .andExpect(jsonPath("$.password", is("David321@")))
+               .andExpect(jsonPath("$.firstName", is("David_first")))
+               .andExpect(jsonPath("$.lastName", is("David_last")));
+        /* clean up the DB */
+        mockMvc.perform(delete("/user/David_update")
+                .contentType(contentType));
     }
 
     @Test
