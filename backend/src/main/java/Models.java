@@ -20,8 +20,7 @@ class User {
 
     private String firstName;
     private String lastName;
-    private long   mid;
-/*
+    /*
     private final String phone;
     private final String address;
     private final String city;
@@ -44,7 +43,7 @@ class User {
     private final String sunStart;
     private final String sunEnd;
     private final float  rating;
-*/
+    */
 
     public User() {}
 
@@ -87,45 +86,6 @@ class User {
     public void setPassword(String pw) {
         password = pw;
     }
-
-    public long getMid() {
-        return mid;
-    }
-
-    public void setMid(long id) {
-        mid = id;
-    }
-}
-
-@Entity
-@Table(name="menus")
-class Menu {
-    @Id
-    private long mid;
-    private String userName;
-    private String category;
-
-    public Menu() {}
-
-    public Menu(String user) {
-        this.userName = user;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String name) {
-        this.userName = name;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
 }
 
 @Entity
@@ -138,7 +98,7 @@ class Dish {
     private String  dishName;
     private float   price;
     private String  description;
-    private boolean Status;
+    private boolean status;
     private boolean monAvail;
     private boolean tueAvail;
     private boolean wedAvail;
@@ -173,7 +133,7 @@ class Dish {
         return dishName;
     }
 
-    public void setCategory(String name) {
+    public void setDishName(String name) {
         this.dishName = name;
     }
 
@@ -194,7 +154,7 @@ class Dish {
     }
 
     public boolean getStatus() {
-        return status;
+        return this.status;
     }
 
     public void setStatus(boolean status) {
@@ -246,7 +206,7 @@ class Dish {
     }
 
     public void setSatAvail(boolean av) {
-        this.satStart = av;
+        this.satAvail = av;
     }
 
     public boolean getSunAvail() {
@@ -254,6 +214,6 @@ class Dish {
     }
 
     public void setSunAvail(boolean av) {
-        this.sunStart = av;
+        this.sunAvail = av;
     }
 }
