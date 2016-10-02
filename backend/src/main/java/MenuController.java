@@ -63,6 +63,8 @@ public class MenuController {
         return new ResponseEntity<>(menu, HttpStatus.OK);
     }
 
+    @RequestMapping(value="/username/{username}", 
+            method=RequestMethod.GET)
     public ResponseEntity<List<Menu>> getAllCategory(@PathVariable("username") 
             String username) {
         List<Menu> categories = null;
@@ -83,10 +85,41 @@ public class MenuController {
 
 
     @RequestMapping(value="/username/{username}/category/{category}", 
-            method=RequestMethod.GET)
-    public ResponseEntity<Menu> createCategory(@PathVariable("username")
-            String username, @PathVariable("category") String category) {
-        Menu menu = null;
+            method=RequestMethod.POST)
+    public ResponseEntity<Menu> createCategory(@RequestBody Menu menu) {
+        if (menu == null) {
+            logger.error("Failed to create category. Input is null");
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
+        String username = menu.getUserName();
+        String category = menu.getCategory();
+        String description = menu.getDescription();
+
+        /* validate user */
+        if(!Utils.validateString(username) || 
+                !Utils.validateString(category)) {
+            logger.error("Failed to create category since input is NULL");
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
+        Menu tmp = dao.findByUserNameAndCategory(username, category);
+        if(tmp != null) {
+            logger.error("Category " + category + " already exists. " + 
+                    "User: " + username);
+            return new ResponseEntity(HttpStatus.CONFLICT);
+        }
+
+        try {
+            dao.save(menu); 
+        } catch (IllegalArgumentException e) {
+            logger.error("Failed to save category: " + category +
+                    " User name: " + username);
+            return new ResponseEntity("Failed", 
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        logger.debug("Saved category " + category + " User name: " + username);
 
         return new ResponseEntity(menu, HttpStatus.OK); 
     }
