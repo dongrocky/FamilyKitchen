@@ -3,6 +3,7 @@ import forester.familykitchen.User;
 import forester.familykitchen.Menu;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.repository.CrudRepository;
+import java.util.List;
 
 @Transactional
 interface UserDao extends CrudRepository<User, Long> {
@@ -21,4 +22,6 @@ interface UserDao extends CrudRepository<User, Long> {
 @Transactional
 interface MenuDao extends CrudRepository<Menu, Long> {
     public Menu findByUserNameAndCategory(String name, String category);
+
+    public List<Menu> findByUserName(String username);
 }

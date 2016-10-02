@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/menu")
 public class MenuController {
@@ -41,7 +43,8 @@ public class MenuController {
 
     @RequestMapping(value="/username/{username}/category/{category}", 
             method=RequestMethod.GET)
-    public ResponseEntity<Menu> getMenu(@PathVariable("username") String username, 
+    public ResponseEntity<Menu> getCategory(@PathVariable("username") 
+            String username, 
             @PathVariable("category") String category) {
         Menu menu = null;
 
@@ -50,7 +53,8 @@ public class MenuController {
         try {
             menu = dao.findByUserNameAndCategory(username, category);
         } catch (IllegalArgumentException e) {
-            logger.error("Failed to find user " + username + " category " + category);
+            logger.error("Failed to find user " + username + " category " 
+                    + category);
             return  new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -59,4 +63,31 @@ public class MenuController {
         return new ResponseEntity<>(menu, HttpStatus.OK);
     }
 
+    public ResponseEntity<List<Menu>> getAllCategory(@PathVariable("username") 
+            String username) {
+        List<Menu> categories = null;
+
+        /* TODO: Need to validate username */
+
+        try {
+            categories = dao.findByUserName(username);
+        } catch (IllegalArgumentException e) {
+            logger.error("Failed to find all categories for user " + username);
+            return  new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        logger.debug("Find all categories for user: " + username);
+
+        return new ResponseEntity(categories, HttpStatus.OK);
+    }
+
+
+    @RequestMapping(value="/username/{username}/category/{category}", 
+            method=RequestMethod.GET)
+    public ResponseEntity<Menu> createCategory(@PathVariable("username")
+            String username, @PathVariable("category") String category) {
+        Menu menu = null;
+
+        return new ResponseEntity(menu, HttpStatus.OK); 
+    }
 }
