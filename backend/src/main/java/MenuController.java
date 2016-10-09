@@ -72,6 +72,7 @@ public class MenuController {
         /* TODO: Need to validate username */
 
         try {
+            /* TODO: is it only one category or all categories? */
             categories = dao.findByUserName(username);
         } catch (IllegalArgumentException e) {
             logger.error("Failed to find all categories for user " + username);
