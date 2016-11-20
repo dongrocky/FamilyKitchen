@@ -11,6 +11,6 @@ public class Utils {
     public static boolean validateString(String str) {
         if(str == null && str.length() == 0) return false;
 
-        return name.matches("^\\w[a-zA-Z0-9_@ ]*$");
+        return str.matches("^\\w[a-zA-Z0-9_@ ]*$");
     }
 }

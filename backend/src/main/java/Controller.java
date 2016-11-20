@@ -146,7 +146,7 @@ class UserController {
 
         logger.debug("Deleted user: " + name);
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     private boolean validateUser(String name) {

@@ -63,6 +63,8 @@ public class MenuController {
         return new ResponseEntity<>(menu, HttpStatus.OK);
     }
 
+    @RequestMapping(value="/username/{username}", 
+            method=RequestMethod.GET)
     public ResponseEntity<List<Menu>> getAllCategory(@PathVariable("username") 
             String username) {
         List<Menu> categories = null;
@@ -84,10 +86,83 @@ public class MenuController {
 
 
     @RequestMapping(value="/username/{username}/category/{category}", 
-            method=RequestMethod.GET)
-    public ResponseEntity<Menu> createCategory(@PathVariable("username")
-            String username, @PathVariable("category") String category) {
-        Menu menu = null;
+            method=RequestMethod.POST)
+    public ResponseEntity<Menu> createCategory(@RequestBody Menu menu) {
+        return createOrUpdateCategoryInternal(menu, true);
+    }
+
+    @RequestMapping(value="/username/{username}/category/{category}", 
+            method=RequestMethod.PUT)
+    public ResponseEntity<Menu> updateCategory(@RequestBody Menu menu) {
+        return createOrUpdateCategoryInternal(menu, false);
+    }
+
+
+    @RequestMapping(value="/username/{username}/category/{category}", 
+            method=RequestMethod.DELETE)
+    public ResponseEntity<Menu> deleteCategory(@PathVariable("username") 
+            String username, 
+            @PathVariable("category") String category) {
+        /* TODO: validate input */
+        if(!Utils.validateString(username) || 
+                !Utils.validateString(category)) {
+            logger.error("Failed to create category since input is NULL");
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            dao.deleteByUserNameAndCategory(username, category);
+        } catch (IllegalArgumentException e) {
+            logger.error("Failed to delete category %s, username %s.", 
+                    category, username);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        logger.debug("Category(%s) deleted. Username: %s", category, username);
+
+        return new ResponseEntity(HttpStatus.OK); 
+    }
+
+    protected ResponseEntity<Menu> createOrUpdateCategoryInternal(Menu menu,
+                boolean create) {
+        if (menu == null) {
+            logger.error("Failed to create category. Input is null");
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
+        String username = menu.getUserName();
+        String category = menu.getCategory();
+        String description = menu.getDescription();
+
+        /* TODO: validate input */
+        /* validate user */
+        if(!Utils.validateString(username) || 
+                !Utils.validateString(category)) {
+            logger.error("Failed to create category since input is NULL");
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
+        Menu tmp = dao.findByUserNameAndCategory(username, category);
+        if(tmp != null && create) {
+            logger.error("Category " + category + " already exists. "
+                    + "Failed to create user: " + username);
+            return new ResponseEntity(HttpStatus.CONFLICT);
+        } else if (tmp == null && !create) {
+            logger.error("Category " + category + "does not exist for update." +
+                    "User: " + username);
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            dao.save(menu); 
+        } catch (IllegalArgumentException e) {
+            logger.error("Failed to save category: " + category +
+                    " User name: " + username);
+            return new ResponseEntity("Failed", 
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        logger.debug("Saved category " + category + " User name: " + username);
 
         return new ResponseEntity(menu, HttpStatus.OK); 
     }

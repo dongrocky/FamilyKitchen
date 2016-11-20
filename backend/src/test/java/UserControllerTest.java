@@ -174,7 +174,7 @@ public class UserControllerTest {
     public void deleteUserTest() throws Exception {
         mockMvc.perform(delete("/user/David")
                 .contentType(contentType))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
 
         /* duplicate delete */
         mockMvc.perform(delete("/user/David")

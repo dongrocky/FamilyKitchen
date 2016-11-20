@@ -24,4 +24,6 @@ interface MenuDao extends CrudRepository<Menu, Long> {
     public Menu findByUserNameAndCategory(String name, String category);
 
     public List<Menu> findByUserName(String username);
+
+    public Menu deleteByUserNameAndCategory(String name, String category);
 }
