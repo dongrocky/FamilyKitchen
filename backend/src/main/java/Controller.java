@@ -130,8 +130,7 @@ class UserController {
     public ResponseEntity<?> deleteUser(@PathVariable("username") String name) {
 
         if(!validateUser(name)) {
-            logger.error("User name " + name + " is not valid " + 
-                         "to delete the user.");
+            logger.error("User name " + name + " is not valid for delete");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 

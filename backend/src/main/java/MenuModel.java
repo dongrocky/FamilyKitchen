@@ -39,8 +39,8 @@ class Menu {
         return category;
     }
 
-    public void setCategory(String description) {
-        this.description = description;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getDescription() {
