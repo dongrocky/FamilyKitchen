@@ -262,7 +262,7 @@ public class MenuControllerTest {
                 .andExpect(status().isNotFound());
 
         /* delete non-existent */
-        mockMvc.perform(delete("/user/John")
+        mockMvc.perform(delete("/account/John")
                 .contentType(contentType))
                 .andExpect(status().isNotFound());
     }

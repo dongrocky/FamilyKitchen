@@ -17,42 +17,42 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
 
-// /user/{username}?type=1
+// /account/{username}?type=1
 // /menu?catogory=xxx&data=Mon
 @RestController
-@RequestMapping("/user")
-class UserController {
+@RequestMapping("/account")
+class AccountController {
 
     private final AtomicLong counter = new AtomicLong();
     private static final Logger logger = 
-        LoggerFactory.getLogger(UserController.class);
+        LoggerFactory.getLogger(AccountController.class);
 
     @Autowired
-    private UserDao userDao;
+    private AccountDao accountDao;
 
     @RequestMapping(value="/{username}", method = RequestMethod.GET)
-    public ResponseEntity<User> getUser(@PathVariable("username") String name) {
-        User user = null;
+    public ResponseEntity<Account> getAccount(@PathVariable("username") String name) {
+        Account account = null;
 
-        /* This is throw exception if the user does not exist. */
+        /* This is throw exception if the account does not exist. */
         // validateUser(name);
 
         try {
-	        user = userDao.findByUserName(name);
+	        account = accountDao.findByUserName(name);
         } catch (IllegalArgumentException e) {
-            logger.error("Failed to get user " + name);
+            logger.error("Failed to get account " + name);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if(user == null) {
+        if(account == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return new ResponseEntity<>(account, HttpStatus.OK);
     }
 
     @RequestMapping(value="/add", method=RequestMethod.GET)
-    public ResponseEntity<?> getCreateUserForm() {
+    public ResponseEntity<?> getCreateAccountForm() {
         //FIXME: return the form
         return new ResponseEntity<>("Success",
                                     new HttpHeaders(),
@@ -60,10 +60,10 @@ class UserController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<?> createUser(@RequestBody User user, 
+    public ResponseEntity<?> createAccount(@RequestBody Account account, 
                                         UriComponentsBuilder ucBuilder) {
 
-        String name = user.getUserName();
+        String name = account.getUserName();
 
         if(name.isEmpty()) {
             logger.error("Empty name is not allowed.");
@@ -72,18 +72,18 @@ class UserController {
                                         HttpStatus.BAD_REQUEST); 
         }
 
-        /* check if the user name exists */
-        if (userDao.findByUserName(name) != null) {
-            logger.info("User name " + name + " already existed.");
+        /* check if the account name exists */
+        if (accountDao.findByUserName(name) != null) {
+            logger.info("Account name " + name + " already existed.");
             return new ResponseEntity<>("Failed",
                                         new HttpHeaders(),
                                         HttpStatus.CONFLICT); 
         }
 
         try {
-	        user = userDao.save(user);
+	        account = accountDao.save(account);
         } catch (IllegalArgumentException e) {
-            logger.error("Failed to create user " + name);
+            logger.error("Failed to create account " + name);
             return new ResponseEntity<>("Failed",
                                         new HttpHeaders(), 
                                         HttpStatus.INTERNAL_SERVER_ERROR); 
@@ -91,10 +91,10 @@ class UserController {
 
         /* Build response */
 
-        logger.debug("Created user: " + name);
+        logger.debug("Created account: " + name);
 
         HttpHeaders header = new HttpHeaders();
-        header.setLocation(ucBuilder.path("/user/{id}")
+        header.setLocation(ucBuilder.path("/account/{id}")
                                 .buildAndExpand(name).toUri());
         return new ResponseEntity<>("Success",
                                     header,
@@ -102,20 +102,20 @@ class UserController {
     }
 
     @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity<?> updateUser(@RequestBody User user) {
-        String name = user.getUserName();
+    public ResponseEntity<?> updateAccount(@RequestBody Account account) {
+        String name = account.getUserName();
 
-        if(!validateUser(name)) {
-            logger.error("User name " + name + " is not valid.");
+        if(!validateAccount(name)) {
+            logger.error("Account name " + name + " is not valid.");
             return new ResponseEntity<>("Failure",
                                         new HttpHeaders(),
                                         HttpStatus.BAD_REQUEST); 
         }
 
         try {
-            user = userDao.save(user);
+            account = accountDao.save(account);
         } catch(IllegalArgumentException e) {
-            logger.error("Failed to update user " + name + " Error: " + e.toString());
+            logger.error("Failed to update account " + name + " Error: " + e.toString());
             return new ResponseEntity<>("Failure",
                                         new HttpHeaders(),
                                         HttpStatus.INTERNAL_SERVER_ERROR); 
@@ -127,36 +127,36 @@ class UserController {
     }
 
     @RequestMapping(value = "/{username}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteUser(@PathVariable("username") String name) {
+    public ResponseEntity<?> deleteAccount(@PathVariable("username") String name) {
 
-        if(!validateUser(name)) {
-            logger.error("User name " + name + " is not valid for delete");
+        if(!validateAccount(name)) {
+            logger.error("Account name " + name + " is not valid for delete");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        User user = new User(name);
+        Account account = new Account(name);
 
         try {
-	        userDao.delete(user);
+	        accountDao.delete(account);
         } catch (IllegalArgumentException e) {
-            logger.error("Failed to delete user " + name);
+            logger.error("Failed to delete account " + name);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        logger.debug("Deleted user: " + name);
+        logger.debug("Deleted account: " + name);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private boolean validateUser(String name) {
+    private boolean validateAccount(String name) {
         if(name == null || name.length() == 0) {
-            logger.error("User name is empty.");
+            logger.error("Account name is empty.");
             return false;
         }
 
-        User user = userDao.findByUserName(name);
+        Account account = accountDao.findByUserName(name);
 
-        if (user == null) {
+        if (account == null) {
             return false;
         }
 
@@ -166,9 +166,9 @@ class UserController {
 }
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
-class UserNotFoundException extends RuntimeException {
+class AccountNotFoundException extends RuntimeException {
 
-    public UserNotFoundException(String userName) {
-        super("could not find user '" + userName + "'.");
+    public AccountNotFoundException(String userName) {
+        super("could not find Account '" + userName + "'.");
     }
 }

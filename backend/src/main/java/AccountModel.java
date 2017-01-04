@@ -8,8 +8,8 @@ import javax.validation.constraints.NotNull;
 
 
 @Entity
-@Table(name="users")
-class User {
+@Table(name="accounts")
+class Account {
 
     @Id
     private String userName;
@@ -45,9 +45,9 @@ class User {
     private final float  rating;
     */
 
-    public User() {}
+    public Account() {}
 
-    public User(String name) {
+    public Account(String name) {
 	    userName = name;
     }
 

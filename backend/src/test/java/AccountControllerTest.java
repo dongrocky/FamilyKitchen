@@ -1,6 +1,6 @@
 package forester.familykitchen;
 
-/* Test file for UserControllerTest */
+/* Test file for AccountControllerTest */
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,7 +27,7 @@ import static org.hamcrest.Matchers.is;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = forester.familykitchen.Application.class)
 @WebAppConfiguration
-public class UserControllerTest {
+public class AccountControllerTest {
     private MockMvc mockMvc;
     private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
@@ -42,17 +42,17 @@ public class UserControllerTest {
     }
 
     @Test
-    public void createUserTest() throws Exception {
+    public void createAccountTest() throws Exception {
         /* clean up */
-        mockMvc.perform(delete("/user/David")
+        mockMvc.perform(delete("/account/David")
                 .contentType(contentType));
-        mockMvc.perform(delete("/user/~David")
+        mockMvc.perform(delete("/account/~David")
                 .contentType(contentType));
-        mockMvc.perform(delete("/user/!David")
+        mockMvc.perform(delete("/account/!David")
                 .contentType(contentType));
-        mockMvc.perform(delete("/user/6")
+        mockMvc.perform(delete("/account/6")
                 .contentType(contentType));
-        mockMvc.perform(delete("/user/")
+        mockMvc.perform(delete("/account/")
                 .contentType(contentType));
 
         /* test with normal name */
@@ -61,18 +61,18 @@ public class UserControllerTest {
                        "\"email\"     : \"David@example.com\"," +
                        "\"password\"  : \"David123@\"" +   
                        "}";
-        mockMvc.perform(post("/user/")
+        mockMvc.perform(post("/account/")
                 .contentType(contentType)
                 .content(json))
                 .andExpect(status().isCreated());
         
-        /* testing with unusual user name. */
+        /* testing with unusual account name. */
         String json1 = "{" + 
                        "\"userName\"  : \"!David\"," +
                        "\"email\"     : \"David@example.com\"," +
                        "\"password\"  : \"David123@\"" +   
                        "}";
-        mockMvc.perform(post("/user/")
+        mockMvc.perform(post("/account/")
                 .contentType(contentType)
                 .content(json1))
                 .andExpect(status().isCreated());
@@ -81,7 +81,7 @@ public class UserControllerTest {
                        "\"email\"     : \"David@example.com\"," +
                        "\"password\"  : \"David123@\"" +   
                        "}";
-        mockMvc.perform(post("/user/")
+        mockMvc.perform(post("/account/")
                 .contentType(contentType)
                 .content(json2))
                 .andExpect(status().isCreated());
@@ -94,7 +94,7 @@ public class UserControllerTest {
                        "\"email\"     : \"David@example.com\"," +
                        "\"password\"  : \"David123@\"" +   
                        "}";
-        mockMvc.perform(post("/user/")
+        mockMvc.perform(post("/account/")
                 .contentType(contentType)
                 .content(json3))
                 .andExpect(status().isBadRequest());
@@ -103,47 +103,50 @@ public class UserControllerTest {
                        "\"email\"     : \"David@example.com\"," +
                        "\"password\"  : \"David123@\"" +   
                        "}";
-        mockMvc.perform(post("/user/")
+        mockMvc.perform(post("/account/")
                 .contentType(contentType)
                 .content(json4))
                 .andExpect(status().isCreated());
 
         /* testing with duplicate */
-        mockMvc.perform(post("/user/")
+        mockMvc.perform(post("/account/")
                 .contentType(contentType)
                 .content(json))
                 .andExpect(status().isConflict());
     }
 
+    /**
+     * Note: This test depends on createAccountTest test case 
+     */
     @Test
-    public void getUserTest() throws Exception {
-        mockMvc.perform(get("/user/David")
+    public void getAccountTest() throws Exception {
+        mockMvc.perform(get("/account/David")
                 .contentType(contentType))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userName",is("David")));
-        mockMvc.perform(get("/user/John")
+        mockMvc.perform(get("/account/John")
                 .contentType(contentType))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void updateUserTest() throws Exception {
+    public void updateAccountTest() throws Exception {
         String json = "{" + 
                        "\"userName\"  : \"David_update\"," +
                        "\"email\"     : \"David@example.com\"," +
                        "\"password\"  : \"David123@\"" +   
                        "}";
-        /* delete the user in case it exists */
-        mockMvc.perform(delete("/user/David_update")
+        /* delete the account in case it exists */
+        mockMvc.perform(delete("/account/David_update")
                 .contentType(contentType));
 
-        /* create the user first */
-        mockMvc.perform(post("/user/")
+        /* create the account first */
+        mockMvc.perform(post("/account/")
                         .contentType(contentType)
                         .content(json))
                         .andExpect(status().isCreated());
 
-        /* update the user info */
+        /* update the account info */
         json = "{" + 
                "\"userName\"  : \"David_update\"," +
                "\"email\"     : \"David_updated@example.com\"," +
@@ -151,13 +154,13 @@ public class UserControllerTest {
                "\"firstName\"  : \"David_first\"," +   
                "\"lastName\"  : \"David_last\"" + 
                "}";
-        mockMvc.perform(put("/user/")
+        mockMvc.perform(put("/account/")
                         .contentType(contentType)
                         .content(json))
                         .andExpect(status().isOk());
 
         /* verify the content */
-        mockMvc.perform(get("/user/David_update")
+        mockMvc.perform(get("/account/David_update")
                         .contentType(contentType))
                .andExpect(status().isOk())
                .andExpect(jsonPath("$.userName",is("David_update")))
@@ -166,23 +169,26 @@ public class UserControllerTest {
                .andExpect(jsonPath("$.firstName", is("David_first")))
                .andExpect(jsonPath("$.lastName", is("David_last")));
         /* clean up the DB */
-        mockMvc.perform(delete("/user/David_update")
+        mockMvc.perform(delete("/account/David_update")
                 .contentType(contentType));
     }
 
+    /**
+     * Note: This test case depends on createAccountTest test case 
+     */
     @Test
-    public void deleteUserTest() throws Exception {
-        mockMvc.perform(delete("/user/David")
+    public void deleteAccountTest() throws Exception {
+        mockMvc.perform(delete("/account/David")
                 .contentType(contentType))
                 .andExpect(status().isOk());
 
         /* duplicate delete */
-        mockMvc.perform(delete("/user/David")
+        mockMvc.perform(delete("/account/David")
                 .contentType(contentType))
                 .andExpect(status().isNotFound());
 
         /* delete non-existent */
-        mockMvc.perform(delete("/user/John")
+        mockMvc.perform(delete("/account/John")
                 .contentType(contentType))
                 .andExpect(status().isNotFound());
     }
