@@ -23,11 +23,15 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 import org.springframework.http.MediaType;
 import java.nio.charset.Charset;
 import static org.hamcrest.Matchers.is;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = forester.familykitchen.Application.class)
 @WebAppConfiguration
 public class MenuControllerTest {
+    private static final Logger log = 
+        LoggerFactory.getLogger(MenuControllerTest.class);
     private MockMvc mockMvc;
     private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
@@ -38,10 +42,13 @@ public class MenuControllerTest {
 
     @Before
     public void setup() throws Exception {
+        log.debug("Setup MenuControllerTest");
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
     }
 
     protected void createCategory() {
+        log.debug("Start createCategory test case.");
+
         String json = "{" + 
                        "\"description\"  : \"This is dessert\"" + 
                        "}";
@@ -58,18 +65,27 @@ public class MenuControllerTest {
         } catch (Exception e) {
             System.out.println("Failed to setup test cases.");
         }
+
+        log.debug("Finish createCategory test case.");
     }
 
     protected void deleteCategory() {
+        log.debug("Start deleteCategory test case.");
+
         try {
             mockMvc.perform(delete("/menu/David/Soup"));
             mockMvc.perform(delete("/menu/David/dessert"));
         } catch (Exception e) {
             System.out.println("Failed to clean up test cases.");
         }
+
+        log.debug("Finish deleteCategory test case.");
     }
+
     @Test
     public void createMenuTest() throws Exception {
+        log.debug("Start createMenuTest test case.");
+
         String json = "{" + 
                        "\"description\"  : \"This is Appetizer\"" + 
                        "}";
@@ -151,10 +167,14 @@ public class MenuControllerTest {
         mockMvc.perform(delete("/menu/David/dessert"));
         mockMvc.perform(delete("/menu/David/Suchi"));
         mockMvc.perform(delete("/menu/David/6Appetizer"));
+
+        log.debug("Finish createMenuTest test case.");
     }
 
     @Test
     public void getUserTest() throws Exception {
+        log.debug("Start getUserTest test case.");
+
         mockMvc.perform(delete("/menu/David"));
         /* create categories */
         createCategory();
@@ -191,10 +211,14 @@ public class MenuControllerTest {
 
         /* clean up */
         deleteCategory();
+
+        log.debug("Finish getUserTest test case.");
     }
 
     @Test
     public void updateUserTest() throws Exception {
+        log.debug("Start updateUserTest test case.");
+
         /* setup */
         createCategory();
 
@@ -242,10 +266,14 @@ public class MenuControllerTest {
         /* clean up the DB */
         mockMvc.perform(delete("/user/David")
                 .contentType(contentType));
+
+        log.debug("Finish updateUserTest test case.");
     }
 
     @Test
     public void deleteUserTest() throws Exception {
+        log.debug("Start deleteUserTest test case.");
+
         /* setup */
         createCategory();
 
@@ -265,6 +293,8 @@ public class MenuControllerTest {
         mockMvc.perform(delete("/account/John")
                 .contentType(contentType))
                 .andExpect(status().isNotFound());
+
+        log.debug("Finish deleteUserTest test case.");
     }
 
 }

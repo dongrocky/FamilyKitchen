@@ -23,12 +23,16 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 import org.springframework.http.MediaType;
 import java.nio.charset.Charset;
 import static org.hamcrest.Matchers.is;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = forester.familykitchen.Application.class)
 @WebAppConfiguration
 public class AccountControllerTest {
     private MockMvc mockMvc;
+    private static final Logger log = 
+        LoggerFactory.getLogger(AccountControllerTest.class);
     private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
             Charset.forName("utf8"));
@@ -38,11 +42,13 @@ public class AccountControllerTest {
 
     @Before
     public void setup() throws Exception {
+        log.debug("Setup test...");
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
     }
 
     @Test
     public void createAccountTest() throws Exception {
+        log.debug("Starting createAccountTest.");
         /* clean up */
         mockMvc.perform(delete("/account/David")
                 .contentType(contentType));
@@ -113,6 +119,8 @@ public class AccountControllerTest {
                 .contentType(contentType)
                 .content(json))
                 .andExpect(status().isConflict());
+        
+        log.debug("createAccountTest finished.");
     }
 
     /**
@@ -120,17 +128,23 @@ public class AccountControllerTest {
      */
     @Test
     public void getAccountTest() throws Exception {
+        log.debug("Start getAccountTest.");
+
         mockMvc.perform(get("/account/David")
                 .contentType(contentType))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userName",is("David")));
+
         mockMvc.perform(get("/account/John")
                 .contentType(contentType))
                 .andExpect(status().isNotFound());
+
+        log.debug("Finish getAccountTest.");
     }
 
     @Test
     public void updateAccountTest() throws Exception {
+        log.debug("Start updateAccountTest.");
         String json = "{" + 
                        "\"userName\"  : \"David_update\"," +
                        "\"email\"     : \"David@example.com\"," +
@@ -171,6 +185,8 @@ public class AccountControllerTest {
         /* clean up the DB */
         mockMvc.perform(delete("/account/David_update")
                 .contentType(contentType));
+
+        log.debug("Finish updateAccountTest.");
     }
 
     /**
@@ -178,6 +194,8 @@ public class AccountControllerTest {
      */
     @Test
     public void deleteAccountTest() throws Exception {
+        log.debug("start deleteAccountTest.");
+
         mockMvc.perform(delete("/account/David")
                 .contentType(contentType))
                 .andExpect(status().isOk());
@@ -191,6 +209,8 @@ public class AccountControllerTest {
         mockMvc.perform(delete("/account/John")
                 .contentType(contentType))
                 .andExpect(status().isNotFound());
+
+        log.debug("finish deleteAccountTest.");
     }
 
 }
